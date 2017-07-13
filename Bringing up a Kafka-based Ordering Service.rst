@@ -1,3 +1,7 @@
+origin 原文:
+https://github.com/hyperledger/fabric/blob/master/docs/source/kafka.rst
+
+
 Bringing up a Kafka-based Ordering Service
 ===========================================
 
