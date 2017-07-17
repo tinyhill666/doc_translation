@@ -28,6 +28,11 @@ retrieve configuration. It does not modify configuration itself, it simply
 provides some bijective operations between different views of the configtx
 format.
 
+工具的名称是 *configtx* 和 *translator* 的拼接，意在传达该工具简单地在不同的等效数据之间进行转换。
+它不产生配置。也不提交或撤回配置。它不修改配置本身，只是简单地提供一些配置格式的不同的双射展现。
+
+译者注：既是单射又是满射的函数称为双射. 函数为双射当且仅当每个可能的像有且仅有一个变量与之对应。参考：http://www.cnblogs.com/wanghetao/archive/2012/03/16/2400619.html
+
 The standard usage is expected to be:
 
   1. SDK retrieves latest config
