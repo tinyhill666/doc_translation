@@ -2,8 +2,12 @@ original：https://github.com/hyperledger/fabric/blob/master/docs/source/configt
 
 Reconfiguring with configtxlator
 ================================
+使用configtxlator工具重新配置
+================================
 
 Overview
+--------
+概览
 --------
 
 The ``configtxlator`` tool was created to support reconfiguration independent
@@ -13,6 +17,9 @@ tests.  However, at the time of this writing, no SDK natively supports
 manipulating the configuration directly, so the ``configtxlator`` tool is
 designed to provide an API which consumers of any SDK may interact with to
 assist with configuration updates.
+
+开发 ``configtxlator`` 工具是为了支持独立于SDK来进行重新配置。通道配置通过一个交易的形式存储在通道的配置区块中，并且能够直接被修改，就像bdd行为测试。
+然而，在本文写作的时间，还没有SDK原生支持直接修改配置，所以 ``configtxlator`` 工具被设计为提供一个API让任意一个SDK的用户都能够与之交互来更新配置。
 
 The tool name is a portmanteau of *configtx* and *translator* and is intended to
 convey that the tool simply converts between different equivalent data
