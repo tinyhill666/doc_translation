@@ -36,11 +36,21 @@ format.
 The standard usage is expected to be:
 
   1. SDK retrieves latest config
-  2. ``configtxlator`` produces human readable version of config
+  2. ``configtxlator`` produces human readable version of config
   3. User or application edits the config
   4. ``configtxlator`` is used to compute config update representation of
      changes to the config
   5. SDK submits signs and submits config
+  
+ 
+标准用法：
+
+  1. SDK 取出最新的配置
+  2.  ``configtxlator`` 工具产生可读版本的配置文件
+  3. 用户或者应用编辑配置文件
+  4. 使用 ``configtxlator`` 工具计算更新的配置与原有配置的差异
+  5. SDK 提交配置以及签名
+
 
 The ``configtxlator`` tool exposes a truly stateless REST API for interacting
 with configuration elements.  These REST components support converting the
@@ -48,27 +58,45 @@ native configuration format to/from a human readable JSON representation, as
 well as computing configuration updates based on the difference between two
 configurations.
 
+ ``configtxlator`` 工具暴露一个完全无状态的 REST API 接口用来和配置匀速进行交互。 
+ 这些 REST 组件支持本地的配置和可读的JSON格式配置文件进行相互转换， 同时根据配置文件的差异计算配置的更新。
+
 Because the ``configtxlator`` service deliberately does not contain any crypto
 material, or otherwise secret information, it does not include any authorization
 or access control. The anticipated typical deployment would be to operate as
 a sandboxed container, locally with the application, so that there is a
 dedicated ``configtxlator`` process for each consumer of it.
 
+因为 ``configtxlator`` 工具特意没有包含任何密码工具和密钥信息， 所有它没有任何权限控制。
+预计的典型部署方式是运行在沙盒容器中， 所以在本地的应用中， 有一个专用的 ``configtxlator`` 进程给每一个使用者。
+
+
 Running the configtxlator
+-------------------------
+运行 configtxlator 工具
 -------------------------
 
 The ``configtxlator`` tool can be downloaded with the other Hyperledger Fabric
 platform-specific binaries. Please see :ref:`download-platform-specific-binaries`
 for details.
 
+ ``configtxlator`` 工具可以和其他 Hyperledger Fabric 平台专用工具一样被下载使用。详情请查看 ref:`download-platform-specific-binaries` 。
+
 The tool may be configured to listen on a different port and you may also
 specify the hostname using the ``--port`` and ``--hostname`` flags. To explore
 the complete set of commands and flags, run ``configtxlator --help``.
 
+该工具可以配置去监听不同的端口和地址，只用  ``--port`` 和 ``--hostname`` 参数。
+查看所有参数的详细信息，执行 ``configtxlator --help``.
+
 The binary will start an http server listening on the designated port and is now
 ready to process request.
 
+工具启动一个服务器监听指定的端口且等待处理请求。
+
 To start the ``configtxlator`` server:
+
+执行命令启动 ``configtxlator`` 服务：
 
 .. code:: bash
 
@@ -77,6 +105,8 @@ To start the ``configtxlator`` server:
 
 Proto translation
 -----------------
+原型翻译
+-----------------
 
 For extensibility, and because certain fields must be signed over, many proto
 fields are stored as bytes.  This makes the natural proto to JSON translation
@@ -84,10 +114,17 @@ using the ``jsonpb`` package ineffective for producing a human readable version
 of the protobufs.  Instead, the ``configtxlator`` exposes a REST component to do
 a more sophisticated translation.
 
+为了可扩展性，以及特定的字段需要被签名，许多原型字段被存储为字节。使用 ``jsonpb`` 工具包来转换原型和可读的 JSON 格式因此变得无效。
+替代的方式是， ``configtxlator`` 暴露一个REST 组件去做更复杂的翻译。
+
 To convert a proto to its human readable JSON equivalent, simply post the binary
 proto to the rest target
 ``http://$SERVER:$PORT/protolator/decode/<message.Name>``,
 where ``<message.Name>`` is the fully qualified proto name of the message.
+
+要转换原型到可读的 JSON 格式，只要发送二进制原型到 rest 目标
+``http://$SERVER:$PORT/protolator/decode/<message.Name>``,
+ ``<message.Name>`` 是合法原型名的全称。
 
 For instance, to decode a configuration block saved as
 ``configuration_block.pb``, run the command:
