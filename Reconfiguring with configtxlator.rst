@@ -129,6 +129,8 @@ where ``<message.Name>`` is the fully qualified proto name of the message.
 For instance, to decode a configuration block saved as
 ``configuration_block.pb``, run the command:
 
+例如，为了解析一个存储为 ``configuration_block.pb`` 的配置区块，执行命令：
+
 .. code:: bash
 
   curl -X POST --data-binary @configuration_block.pb http://127.0.0.1:7059/protolator/decode/common.Block
@@ -137,8 +139,13 @@ To convert the human readable JSON version of the proto message, simply post the
 JSON version to ``http://$SERVER:$PORT/protolator/encode/<message.Name``, where
 ``<message.Name>`` is again the fully qualified proto name of the message.
 
+转换可读的JSON版本为原型数据，只要发送JSON版本到 ``http://$SERVER:$PORT/protolator/encode/<message.Name>`` ，
+这里的 ``<message.Name>`` 是合法原型的全称。
+
 For instance, to re-encode the block saved as ``configuration_block.json``, run
 the command:
+
+例如，重新编码存储为 ``configuration_block.json`` 的配置区块，执行命令：
 
 .. code:: bash
 
@@ -150,7 +157,15 @@ Any of the configuration related protos, including ``common.Block``,
 these URLs.  In the future, other proto decoding types may be added, such as
 for endorser transactions.
 
+
+任何原型相关的配置，包括  ``common.Block``,
+``common.Envelope``, ``common.ConfigEnvelope``, ``common.ConfigUpdateEnvelope``,
+``common.Configuration``, 和 ``common.ConfigUpdate`` 都是这些地址的合法的目标。
+未来，其他解析类型可能会被增加，比如背书交易。
+
 Config update computation
+-------------------------
+配置更新计算
 -------------------------
 
 Given two different configurations, it is possible to compute the config update
@@ -159,9 +174,15 @@ encoded configurations as ``multipart/formdata``, with the original as field
 ``original`` and the updated as field ``updated``, to
 ``http://$SERVER:$PORT/configtxlator/compute/update-from-configs``.
 
+两个不同的配置，可以计算出两个配置更新所需要的交易。
+向  `http://$SERVER:$PORT/configtxlator/compute/update-from-configs``  
+发送两个已编码的 ``common.Config`` 原型配置作为 ``multipart/formdata`` ，其中原始配置填入 ``original`` 域，更新配置填入  ``updated`` 域。
+
 For example, given the original config as the file ``original_config.pb`` and
 the updated config as the file ``updated_config.pb`` for the channel
 ``desiredchannel``:
+
+例如，对于通道 ``desiredchannel`` 的原始配置文件 ``original_config.pb`` 和更新配置文件  ``updated_config.pb`` ：
 
 .. code:: bash
 
@@ -169,8 +190,12 @@ the updated config as the file ``updated_config.pb`` for the channel
 
 Bootstraping example
 --------------------
+引导实例
+--------------------
 
 First start the ``configtxlator``:
+
+首先，启动启动 ``configtxlator`` 工具:
 
 .. code:: bash
 
@@ -178,6 +203,8 @@ First start the ``configtxlator``:
   2017-05-31 12:57:22.499 EDT [configtxlator] main -> INFO 001 Serving HTTP requests on port: 7059
 
 First, produce a genesis block for the ordering system channel:
+
+然后，为通道产生初始区块
 
 .. code:: bash
 
@@ -188,6 +215,8 @@ First, produce a genesis block for the ordering system channel:
 
 Decode the genesis block into a human editable form:
 
+解析初始区块为可编辑的形式
+
 .. code:: bash
 
   curl -X POST --data-binary @genesis_block.pb http://127.0.0.1:7059/protolator/decode/common.Block > genesis_block.json
@@ -197,14 +226,22 @@ it programatically.  Here we use the JSON CLI tool ``jq``.  For simplicity, we
 are editing the batch size for the channel, because it is a single numeric
 field. However, any edits, including policy and MSP edits may be made here.
 
+使用你喜欢的JSON编辑器编辑 ``genesis_block.json`` 文件，或使用程序编辑。 这里需要使用JSON  工具  ``jq`` .
+为了方便，这里编辑通道的区块大小，因为这是一个数字字段。
+然而，任何修改，包括策略和MSP都是可以做的。
+
 First, let's establish an environment variable to hold the string that defines
 the path to a property in the json:
+
+首先，建立一个环境变量来存储变量的路径
 
 .. code:: bash
 
   export MAXBATCHSIZEPATH=".data.data[0].payload.data.config.channel_group.groups.Orderer.values.BatchSize.value.max_message_count"
 
 Next, let's display the value of that property:
+
+然后，显示变量的值
 
 .. code:: bash
 
@@ -213,6 +250,8 @@ Next, let's display the value of that property:
 
 Now, let's set the new batch size, and display the new value:
 
+现在，设置新的区块大小，并且显示新值：
+
   jq "$MAXBATCHSIZEPATH = 20" genesis_block.json  > updated_genesis_block.json
   jq "$MAXBATCHSIZEPATH" updated_genesis_block.json
   20
@@ -220,12 +259,16 @@ Now, let's set the new batch size, and display the new value:
 The genesis block is now ready to be re-encoded into the native proto form to be
 used for bootstrapping:
 
+初始区块现在已经可以被重新编码为可用于引导启动的原型格式：
+
 .. code:: bash
 
   curl -X POST --data-binary @updated_genesis_block.json http://127.0.0.1:7059/protolator/encode/common.Block > updated_genesis_block.pb
 
 The ``updated_genesis_block.pb`` file may now be used as the genesis block for
 bootstrapping an ordering system channel.
+
+现在， ``updated_genesis_block.pb`` 文件可以作为初始区块来引导通道启动了。
 
 Reconfiguration example
 -----------------------
