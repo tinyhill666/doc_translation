@@ -272,10 +272,15 @@ bootstrapping an ordering system channel.
 
 Reconfiguration example
 -----------------------
+重配置示例
+-----------------------
 
 In another terminal window, start the orderer using the default options,
 including the provisional bootstrapper which will create a ``testchainid``
 ordering system channel.
+
+打开另一个终端窗口，使用默认选项启动orderer，
+包括临时的引导程序，将会创建一个名称为 ``testchainid`` 的排序通道。
 
 .. code:: bash
 
@@ -284,7 +289,11 @@ ordering system channel.
 Reconfiguring a channel can be performed in a very similar way to modifying a
 genesis config.
 
+重配置一个通道与修改初始配置类似。
+
 First, fetch the config_block proto:
+
+首先，获取配置区块原型：
 
 .. code:: bash
 
@@ -297,11 +306,15 @@ First, fetch the config_block proto:
 
 Next, send the config block to the ``configtxlator`` service for decoding:
 
+然后，发送配置区块到 ``configtxlator`` 服务进行解析：
+
 .. code:: bash
 
   curl -X POST --data-binary @config_block.pb http://127.0.0.1:7059/protolator/decode/common.Block > config_block.json
 
 Extract the config section from the block:
+
+从区块中提取配置区域
 
 .. code:: bash
 
@@ -310,11 +323,15 @@ Extract the config section from the block:
 Edit the config, saving it as a new ``updated_config.json``.  Here, we set the
 batch size to 30.
 
+编辑配置，将编辑后的内容存放在 ``updated_config.json`` 。这里我们设计区块大小为30.
+
 .. code:: bash
 
   jq ".channel_group.groups.Orderer.values.BatchSize.value.max_message_count = 30" config.json  > updated_config.json
 
 Re-encode both the original config, and the updated config into proto:
+
+重新将原配置与新配置进行编码：
 
 .. code:: bash
 
@@ -327,6 +344,8 @@ Re-encode both the original config, and the updated config into proto:
 Now, with both configs properly encoded, send them to the `configtxlator`
 service to compute the config update which transitions between the two.
 
+现在，将编码后的文件发送到 `configtxlator` 服务进行计算比对两个的差异。
+
 .. code:: bash
 
   curl -X POST -F original=@config.pb -F updated=@updated_config.pb http://127.0.0.1:7059/configtxlator/compute/update-from-configs -F channel=testchainid > config_update.pb
@@ -335,13 +354,20 @@ At this point, the computed config update is now prepared. Traditionally,
 an SDK would be used to sign and wrap this message. However, in the interest of
 using only the peer cli, the `configtxlator` can also be used for this task.
 
+到此，计算出的配置更新已经准备好了。一般，SDK会对该消息进行签名打包。
+然而，为了那些只使用节点命令（peer cli）的情况， `configtxlator` 工具也能进行这个工作。
+
 First, we decode the ConfigUpdate so that we may work with it as text:
+
+首先，按上文所说对配置更新进行编码：
 
 .. code:: bash
 
   $ curl -X POST --data-binary @config_update.pb http://127.0.0.1:7059/protolator/decode/common.ConfigUpdate > config_update.json
 
 Then, we wrap it in an envelope message:
+
+然后，讲消息进行打包：
 
 .. code:: bash
 
@@ -350,6 +376,8 @@ Then, we wrap it in an envelope message:
 Next, convert it back into the proto form of a full fledged config
 transaction:
 
+接着，将它转换为完整配置的交易的原型结构
+
 .. code:: bash
 
   curl -X POST --data-binary @config_update_as_envelope.json http://127.0.0.1:7059/protolator/encode/common.Envelope > config_update_as_envelope.pb
@@ -357,14 +385,20 @@ transaction:
 Finally, submit the config update transaction to ordering to perform a config
 update.
 
+最后，将配置更新交易提交到排序服务。
+
 .. code:: bash
 
   peer channel update -f config_update_as_envelope.pb -c testchainid -o 127.0.0.1:7050
 
 Adding an organization
 ----------------------
+增加组织
+----------------------
 
 First start the ``configtxlator``:
+
+首先启动 ``configtxlator`` 服务：
 
 .. code:: bash
 
@@ -372,6 +406,8 @@ First start the ``configtxlator``:
   2017-05-31 12:57:22.499 EDT [configtxlator] main -> INFO 001 Serving HTTP requests on port: 7059
 
 Start the orderer using the ``SampleDevModeSolo`` profile option.
+
+使用 ``SampleDevModeSolo`` 属性配置来启动排序服务。
 
 .. code:: bash
 
@@ -381,6 +417,9 @@ The process to add an organization then follows exactly like the batch size
 example. However, instead of setting the batch size, a new org is defined at
 the application level. Adding an organization is slightly more involved because
 we must first create a channel, then modify its membership set.
+
+增加组织的国政和修改区块大小的过程类似。然而，不同于设置区块大小，一个新的组织被定义在应用层。
+增加一个组织涉及更多内容因为需要先创建通道，然后修改它的成员集。
 
 .. Licensed under Creative Commons Attribution 4.0 International License
    https://creativecommons.org/licenses/by/4.0/
