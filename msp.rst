@@ -1,13 +1,23 @@
 origin : https://github.com/hyperledger/fabric/blob/master/docs/source/msp.rst
 
+术语解释：(https://wiki.hyperledger.org/groups/twgc/fabric-doc/glossary.md)
+Membership Service Providers (MSP)
+MSP是指为client和peer提供证书的系统抽象组件。Client用证书来认证他们的交易；peer用证书认证其交易背书。该接口与系统的交易处理组件密切相关，旨在使已定义的成员身份服务组件以这种方式顺利插入而不会修改系统的交易处理组件的核心。
+
 
 Membership Service Providers (MSP)
+==================================
+成员服务组件 (MSP)
 ==================================
 
 The document serves to provide details on the setup and best practices for MSPs.
 
+该文档旨在提供MSP的配置细节和最佳实践。
+
 Membership service provider (MSP) is a component that aims to offer an
 abstraction of a membership operation architecture.
+
+MSP是一个组件，旨在提供一个抽象的成员操作架构。
 
 In particular, MSP abstracts away all cryptographic mechanisms and protocols
 behind issuing and validating certificates, and user authentication. An
@@ -15,15 +25,26 @@ MSP may define their own notion of identity, and the rules by which those
 identities are governed (identity validation) and authenticated (signature
 generation and verification).
 
+尤其是，MSP抽象出所有加密机制和协议包括颁发和验证证书，以及用户认证。
+MSP可以定义自己的身份概念和规则，通过这些进行身份管理（身份验证）和身份验证（签名的生成和验证）。
+
 A Hyperledger Fabric blockchain network can be governed by one or more MSPs.
 This provides modularity of membership operations, and interoperability
 across different membership standards and architectures.
+
+一个 Hyperledger Fabric 区块链网络能够被一个或多个MSP管理。
+这为不同的成员标准和架构提供了会员操作的模块化和互操作性。
+
 
 In the rest of this document we elaborate on the setup of the MSP
 implementation supported by Hyperledger Fabric, and discuss best practices
 concerning its use.
 
+在文档剩余的部分，我们将阐述如何安装配置Hyperledger Fabric的MSP实现，并且讨论关于其使用的最佳实践。
+
 MSP Configuration
+-----------------
+MSP 配置
 -----------------
 
 To setup an instance of the MSP, its configuration needs to be specified
@@ -31,6 +52,9 @@ locally at each peer and orderer (to enable peer, and orderer signing),
 and on the channels to enable peer, orderer, client identity validation, and
 respective signature verification (authentication) by and for all channel
 members.
+
+安装一个MSP实例，它的配置需要在每个peer节点和orderer节点进行指定（使得peer节点和orderer节点可以进行签名），
+也需要指定在通道上使得所有通道成员的peer节点，orderer节点和客户端进行身份验证和签名验证。
 
 Firstly, for each MSP a name needs to be specified in order to reference that MSP
 in the network (e.g. ``msp1``, ``org2``, and ``org3.divA``). This is the name under
