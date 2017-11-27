@@ -1,2 +1,1 @@
-# doc_translation
-translate some english docs to chinese.
+# deprected see qiushaoxi.com
